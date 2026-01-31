@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
+import { Navigate, useNavigate } from "react-router-dom";
 
 function Checkout() {
+  const navigate = useNavigate();
   const [cartItems, setCartItems] = useState([]);
-  const [form, setForm] = useState({
+  const [customer, setCustomer] = useState({
     firstName: "",
     lastName: "",
     email: "",
@@ -34,11 +36,29 @@ function Checkout() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const response = fetch(`http://localhost:5000/checkout`, {
+    const response = await fetch(`http://localhost:5000/checkout`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(cartItems, form),
+      body: JSON.stringify({ customer }),
     });
+
+    const data = await response.json();
+
+    if (data.ok) {
+      setCustomer({
+        firstName: "",
+        lastName: "",
+        email: "",
+        phone: "",
+        address: "",
+        city: "",
+        postalCode: "",
+      });
+      console.log(data.message);
+      navigate("/");
+    } else {
+      console.log(data.message);
+    }
   };
   return (
     <div className="max-w-7xl mx-auto px-4 py-10 grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -46,14 +66,16 @@ function Checkout() {
       <div className="bg-white p-6 rounded-lg shadow">
         <h2 className="text-2xl font-semibold mb-6">Checkout</h2>
 
-        <form className="space-y-4">
+        <form className="space-y-4" onSubmit={handleSubmit}>
           <div>
             <label className="block text-sm font-medium mb-1">First Name</label>
             <input
               type="text"
               className="w-full border rounded px-3 py-2 focus:outline-none focus:ring focus:ring-gray-300"
               name="firstName"
-              onChange={(e) => setForm({ ...form, firstName: e.target.value })}
+              onChange={(e) =>
+                setCustomer({ ...customer, firstName: e.target.value })
+              }
             />
           </div>
 
@@ -63,7 +85,9 @@ function Checkout() {
               type="text"
               className="w-full border rounded px-3 py-2 focus:outline-none focus:ring focus:ring-gray-300"
               name="lastName"
-              onChange={(e) => setForm({ ...form, lastName: e.target.value })}
+              onChange={(e) =>
+                setCustomer({ ...customer, lastName: e.target.value })
+              }
             />
           </div>
 
@@ -73,7 +97,7 @@ function Checkout() {
               type="email"
               className="w-full border rounded px-3 py-2 focus:outline-none focus:ring focus:ring-gray-300"
               name="email"
-              onChange={(e) => setForm({ ...form, email: e.target.value })}
+              onChange={(e) => setCustomer({ ...customer, email: e.target.value })}
             />
           </div>
 
@@ -83,7 +107,7 @@ function Checkout() {
               type="tel"
               className="w-full border rounded px-3 py-2 focus:outline-none focus:ring focus:ring-gray-300"
               name="phone"
-              onChange={(e) => setForm({ ...form, phone: e.target.value })}
+              onChange={(e) => setCustomer({ ...customer, phone: e.target.value })}
             />
           </div>
 
@@ -95,7 +119,9 @@ function Checkout() {
               type="text"
               className="w-full border rounded px-3 py-2 focus:outline-none focus:ring focus:ring-gray-300"
               name="address"
-              onChange={(e) => setForm({ ...form, address: e.target.value })}
+              onChange={(e) =>
+                setCustomer({ ...customer, address: e.target.value })
+              }
             />
           </div>
 
@@ -106,7 +132,7 @@ function Checkout() {
                 type="text"
                 className="w-full border rounded px-3 py-2 focus:outline-none focus:ring focus:ring-gray-300"
                 name="city"
-                onChange={(e) => setForm({ ...form, city: e.target.value })}
+                onChange={(e) => setCustomer({ ...customer, city: e.target.value })}
               />
             </div>
 
@@ -119,7 +145,7 @@ function Checkout() {
                 className="w-full border rounded px-3 py-2 focus:outline-none focus:ring focus:ring-gray-300"
                 name="postalCode"
                 onChange={(e) =>
-                  setForm({ ...form, postalCode: e.target.value })
+                  setCustomer({ ...customer, postalCode: e.target.value })
                 }
               />
             </div>

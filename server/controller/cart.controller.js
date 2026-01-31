@@ -101,12 +101,12 @@ export const placeOrder = async (req, res) => {
       (sum, item) => sum + item.price * item.quantity,
       0,
     );
-    
+
     const { customer } = req.body;
     await orderModel.create({
-      customer: customer,
+      customer,
       product: cartItems,
-      totalAmount,
+      totalPrice: totalAmount,
     });
 
     return res
